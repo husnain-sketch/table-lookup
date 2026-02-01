@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find Your Table</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      text-align: center;
+      padding-top: 60px;
+    }
+    .card {
+      background: white;
+      width: 90%;
+      max-width: 400px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 12px;
+    }
+    button {
+      background: #005eb8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Find Your Table Number</h2>
+    <p>Please enter your unique key</p>
+    <input id="key" placeholder="e.g. A101">
+    <button onclick="findTable()">Find Table</button>
+    <h1 id="result"></h1>
+  </div>
+
+  <script>
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsMP-z8vYEUtBgemxoXT2dT_ep_n9f1nliVOI7hmI_WSkAE_Nk6kSKsD8rHiCJ-mmSrnXyfRUAGy5K/pub?gid=0&single=true&output=tsv";
+
+    async function findTable() {
+      const keyInput = document.getElementById("key").value.trim().toUpperCase();
+      const result = document.getElementById("result");
+
+      if (!keyInput) {
+        result.innerText = "Please enter a key";
+        return;
+      }
+
+      const response = await fetch(sheetURL);
+      const data = await response.text();
+      const rows = data.split("\n").slice(1);
+
+      for (let row of rows) {
+        const cols = row.split(",");
+        if (cols[0].trim().toUpperCase() === keyInput) {
+          result.innerText = "Your Table Number is " + cols[2];
+          return;
+        }
+      }
+
+      result.innerText = "Invalid Key";
+    }
+  </script>
+
+</body>
+</html>
